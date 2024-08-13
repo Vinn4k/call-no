@@ -4,7 +4,7 @@ import React, { Fragment, useEffect } from "react";
 
 import { WEBAPP_URL } from "@calcom/lib/constants";
 import { useLocale } from "@calcom/lib/hooks/useLocale";
-import { EmptyScreen, Alert, Button } from "@calcom/ui";
+import { Alert } from "@calcom/ui";
 
 type LicenseRequiredProps = {
   as?: keyof JSX.IntrinsicElements | "";
@@ -21,7 +21,7 @@ const LicenseRequired = ({ children, as = "", ...rest }: LicenseRequiredProps) =
 
   useEffect(() => {
     if (process.env.NODE_ENV === "development" && hasValidLicense === false) {
-      // Very few people will see this, so we don't need to translate it
+      // Informational message in development mode
       console.info(
         `You're using a feature that requires a valid license. Please go to ${WEBAPP_URL}/auth/setup to enter a license key.`
       );
@@ -32,8 +32,8 @@ const LicenseRequired = ({ children, as = "", ...rest }: LicenseRequiredProps) =
     <Component {...rest}>
       {hasValidLicense === null || hasValidLicense ? (
         children
-      ) : process.env.NODE_ENV === "development" ? (
-        /** We only show a warning in development mode, but allow the feature to be displayed for development/testing purposes */
+      ) : (
+        /** Allow the feature to be displayed even if the license is invalid */
         <>
           <Alert
             className="mb-4"
@@ -49,17 +49,6 @@ const LicenseRequired = ({ children, as = "", ...rest }: LicenseRequiredProps) =
           />
           {children}
         </>
-      ) : (
-        <EmptyScreen
-          Icon="triangle-alert"
-          headline={t("enterprise_license")}
-          buttonRaw={
-            <Button color="secondary" href="https://cal.com/sales">
-              {t(`contact_sales`)}
-            </Button>
-          }
-          description={t("enterprise_license_sales")}
-        />
       )}
     </Component>
   );
